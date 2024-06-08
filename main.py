@@ -10,6 +10,8 @@ from workshop import (
     TOTAL_DAYS,
 )
 
+plot: bool
+
 
 def plot_costs(initial_costs, new_costs, simulations: int):
     """
@@ -25,7 +27,6 @@ def plot_costs(initial_costs, new_costs, simulations: int):
     ax.set_xlabel("Simulation")
     ax.set_ylabel("Cost")
     ax.legend()
-    plt.show()
 
     # save the image to img dir
     fig.savefig(f"img/{simulations}-costs.png")
@@ -46,7 +47,6 @@ def plot_stop_hours(initial_stop_hours, new_stop_hours, simulations: int):
     ax.set_xlabel("Simulation")
     ax.set_ylabel("Stop hours")
     ax.legend()
-    plt.show()
 
     # save the image to img dir
     fig.savefig(f"img/{simulations}-stop_hours.png")
@@ -71,8 +71,6 @@ def plot_max_allowed_daily_cost_increase(mean: float, results: list, simulations
         linestyle="-",
         label="Mean",
     )
-
-    plt.show()
 
     # save the image to img dir
     fig.savefig(f"img/{simulations}-max_allowed_daily_cost_increase.png")
