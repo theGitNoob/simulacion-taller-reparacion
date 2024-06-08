@@ -13,58 +13,70 @@ from workshop import (
 plot: bool
 
 
-def plot_costs(initial_costs, new_costs, simulations: int):
+def plot_costs(initial_costs, new_costs):
     """
     Plot the costs of the initial and new system
-    :param simulations:
     :param initial_costs: The costs of the initial system
     :param new_costs: The costs of the new system
     """
 
     fig, ax = plt.subplots()
-    ax.plot(initial_costs, label="Initial system")
-    ax.plot(new_costs, label="New system")
-    ax.set_xlabel("Simulation")
-    ax.set_ylabel("Cost")
+    ax.plot(initial_costs, label="Sistema inicial")
+    ax.plot(new_costs, label="Nuevo sistema")
+    ax.set_xlabel("Número de Simulación")
+    ax.set_ylabel("Costo")
     ax.legend()
 
     # save the image to img dir
-    fig.savefig(f"img/{simulations}-costs.png")
+    fig.savefig(f"img/costs.png")
 
 
-def plot_stop_hours(initial_stop_hours, new_stop_hours, simulations: int):
+def plot_system_cost(costs, plot_name: str, plot_label: str):
+
+    fig, ax = plt.subplots()
+    ax.plot(costs, label=plot_label)
+    ax.set_xlabel("Numero de Simulacion")
+    ax.set_ylabel("Costo")
+    ax.legend()
+
+    # save the image to img dir
+    fig.savefig(f"img/{plot_name}.png")
+
+
+def plot_stop_hours(initial_stop_hours, new_stop_hours):
     """
     Plot the total stop hours of the initial and new system
-    :param simulations:
     :param initial_stop_hours: The total stop hours of the initial system
     :param new_stop_hours: The total stop hours of the new system
     :return:
     """
 
     fig, ax = plt.subplots()
-    ax.plot(initial_stop_hours, label="Initial system")
-    ax.plot(new_stop_hours, label="New system")
-    ax.set_xlabel("Simulation")
-    ax.set_ylabel("Stop hours")
+    ax.plot(
+        initial_stop_hours, label="Sistema inicial con media de reparación de 7 horas"
+    )
+    ax.plot(new_stop_hours, label="Nuevo sistema con media de reparación de 5 horas")
+    ax.set_xlabel("Numero de simulación")
+    ax.set_ylabel("Horas de parada")
+
     ax.legend()
 
     # save the image to img dir
-    fig.savefig(f"img/{simulations}-stop_hours.png")
+    fig.savefig(f"img/stop_hours.png")
 
 
-def plot_max_allowed_daily_cost_increase(mean: float, results: list, simulations: int):
+def plot_max_allowed_cost_increase(mean: float, results: list):
     """
     Plot the max allowed daily cost increase for the new system
     and the mean
-    :param simulations:
     :param mean:  Average of the max allowed daily cost increase
     :param results: The results of the simulations
     """
 
     fig, ax = plt.subplots()
     ax.plot(results)
-    ax.set_xlabel("Simulation")
-    ax.set_ylabel("Max allowed daily cost increase")
+    ax.set_xlabel("Número de simulación")
+    ax.set_ylabel("Incremento máximo de coste permisible")
     ax.axhline(
         y=mean,
         color="r",
@@ -73,7 +85,7 @@ def plot_max_allowed_daily_cost_increase(mean: float, results: list, simulations
     )
 
     # save the image to img dir
-    fig.savefig(f"img/{simulations}-max_allowed_daily_cost_increase.png")
+    fig.savefig(f"img/max_allowed_cost_increase.png")
 
 
 def run_sims(simulations: int):
@@ -86,6 +98,7 @@ def run_sims(simulations: int):
     new_stop_hours = []
     initial_total_costs = []
     new_total_costs = []
+    new_total_costs_with_price_increase = []
     for i in range(simulations):
 
         car_arrivals_delay = run_car_arrival()
@@ -110,22 +123,38 @@ def run_sims(simulations: int):
         stop_hours = sum(i["time_stopped"] for i in new_logs)
         new_stop_hours.append(stop_hours)
 
+        # Calculate the max allowed daily cost increase
+        max_allowed_daily_cost_increase = (total_initial_cost - new_cost) / TOTAL_DAYS
+
         # Calculate the new total cost
         new_total_cost = new_cost + TOTAL_DAYS * MAINTENANCE_COST
         new_total_costs.append(new_total_cost)
 
-        # Calculate the max allowed daily cost increase
-        max_allowed_daily_cost_increase = (total_initial_cost - new_cost) / TOTAL_DAYS
+        # Calculate the new total cost with price increase
+        new_total_cost_with_price_increase = (
+            new_cost + TOTAL_DAYS * max_allowed_daily_cost_increase
+        )
+        new_total_costs_with_price_increase.append(new_total_cost_with_price_increase)
 
         results.append(max_allowed_daily_cost_increase - MAINTENANCE_COST)
 
     mean = sum(results) / simulations
     print(f"Average max allowed daily cost increase: {mean}")
 
-    plot_costs(initial_total_costs, new_total_costs, simulations)
-    plot_stop_hours(initial_stop_hours, new_stop_hours, simulations)
-    plot_max_allowed_daily_cost_increase(mean, results, simulations)
+    plot_costs(initial_total_costs, new_total_costs)
+    plot_stop_hours(initial_stop_hours, new_stop_hours)
+    plot_max_allowed_cost_increase(mean, results)
+    plot_system_cost(
+        new_total_costs_with_price_increase,
+        "cost_with_price_increase",
+        "Costo total con incremento de precio",
+    )
+    plot_system_cost(
+        initial_total_costs, "initial_total_costs", "Costo total del sistema inicial"
+    )
 
 
 if __name__ == "__main__":
     run_sims(100)
+
+# 132.6375390728007
