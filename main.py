@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 
+from car_arrival import run_car_arrival
 from workshop import (
     run_simulation,
     AVERAGE_REPAIR_TIME,
@@ -89,7 +90,11 @@ def run_sims(simulations: int):
     new_total_costs = []
     for i in range(simulations):
 
-        initial_cost, logs = run_simulation(AVERAGE_REPAIR_TIME, SIMULATION_TIME)
+        car_arrivals_delay = run_car_arrival()
+
+        initial_cost, logs = run_simulation(
+            AVERAGE_REPAIR_TIME, SIMULATION_TIME, car_arrivals_delay
+        )
 
         # Calculate the total stop hours
         stop_hours = sum(i["time_stopped"] for i in logs)
@@ -99,7 +104,9 @@ def run_sims(simulations: int):
         total_initial_cost = initial_cost + TOTAL_DAYS * MAINTENANCE_COST
         initial_total_costs.append(total_initial_cost)
 
-        new_cost, new_logs = run_simulation(NEW_AVERAGE_REPAIR_TIME, SIMULATION_TIME)
+        new_cost, new_logs = run_simulation(
+            NEW_AVERAGE_REPAIR_TIME, SIMULATION_TIME, car_arrivals_delay
+        )
 
         # Calculate the new total stop hours
         stop_hours = sum(i["time_stopped"] for i in new_logs)
@@ -124,5 +131,3 @@ def run_sims(simulations: int):
 
 if __name__ == "__main__":
     run_sims(100)
-# 1: 176.876277297284
-# 100: 125.60823572395486

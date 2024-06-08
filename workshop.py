@@ -70,9 +70,10 @@ def car(env, name, workshop, results):
         )
 
 
-def setup(env, average_repair_time, results):
+def setup(env, average_repair_time, results, car_arrivals_delay):
     """
     Create a workshop, and keep creating cars approx. every ``average_arrival_time`` hours.
+    :param car_arrivals_delay: The list of car arrivals delay
     :param env: The simpy environment
     :param average_repair_time: The average time it takes to repair a car
     :param results: A list to store the results
@@ -81,23 +82,28 @@ def setup(env, average_repair_time, results):
     workshop = Workshop(env, average_repair_time)
 
     car_count = itertools.count()
+    idx = 0
     while True:
-        yield env.timeout(random.expovariate(1 / AVERAGE_ARRIVAL_TIME))
+        # yield env.timeout(random.expovariate(1 / AVERAGE_ARRIVAL_TIME))
+        yield env.timeout(car_arrivals_delay[idx])
+        # print(f"Car {idx} arrived at {env.now}")
         env.process(car(env, f"Car {next(car_count)}", workshop, results))
+        idx += 1
 
 
-def run_simulation(average_repair_time, simulation_time):
+def run_simulation(average_repair_time, simulation_time, car_arrivals_delay):
     """
     Run the simulation and return the total cost of every car stopped in the workshop
     :param average_repair_time: The average time it takes to repair a car
     :param simulation_time: The time to run the simulation
+    :param car_arrivals_delay: The list of car arrivals delay
 
     """
     env = simpy.Environment()
 
     results = []
 
-    env.process(setup(env, average_repair_time, results))
+    env.process(setup(env, average_repair_time, results, car_arrivals_delay))
     env.run(until=simulation_time)
 
     total_stop_time = sum(i["time_stopped"] for i in results)
@@ -106,6 +112,7 @@ def run_simulation(average_repair_time, simulation_time):
     return total_stop_cost, results
 
 
+# Set the random seed, uncomment this line to get the same results every time
 random.seed(RANDOM_SEED)
 
 
