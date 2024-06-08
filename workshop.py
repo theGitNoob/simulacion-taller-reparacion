@@ -84,9 +84,7 @@ def setup(env, average_repair_time, results, car_arrivals_delay):
     car_count = itertools.count()
     idx = 0
     while True:
-        # yield env.timeout(random.expovariate(1 / AVERAGE_ARRIVAL_TIME))
         yield env.timeout(car_arrivals_delay[idx])
-        # print(f"Car {idx} arrived at {env.now}")
         env.process(car(env, f"Car {next(car_count)}", workshop, results))
         idx += 1
 
