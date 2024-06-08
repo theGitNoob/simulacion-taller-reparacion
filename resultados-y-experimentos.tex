@@ -1,0 +1,75 @@
+\subsection{Hallazgos de la Simulación}\label{subsec:hallazgos-de-la-simulacion}
+
+Se realizaron simulaciones para ambos escenarios de mantenimiento: el actual con una media de 7 horas por coche y el nuevo con una media de 5 horas.
+Ambos escenarios fueron simulados 1000 veces para evaluar y se encontró la media del costo máximo adicional del nuevo servicio para seguir siendo rentable.
+Los resultados indican que el incremento máximo en el costo del nuevo servicio de mantenimiento para seguir siendo rentable es de aproximadamente 125 euros por día .
+
+\subsection{Interpretación de los Resultados}\label{subsec:interpretacion-de-los-resultados}
+
+Los resultados muestran que, aunque el nuevo servicio de mantenimiento reduce significativamente el tiempo de inactividad de los coches, sólo es económicamente viable si el costo diario adicional no supera los 125 euros.
+Esto se debe a que la reducción en los costos de inactividad debe compensar el aumento en el costo del servicio, lo cual si tenemos en cuenta que la media de coches diarios se mantiene y la diferencia
+en el tiempo de mantenimiento es de 2 horas no debería permitir un gran incremento el coste
+
+\subsection{Hipótesis Extraídas de los Resultados}\label{subsec:hipotesis-extraidas-de-los-resultados}
+
+\begin{itemize}
+    \item Reducir el tiempo de mantenimiento puede ser económicamente ventajoso si el costo adicional del nuevo servicio no supera un umbral específico.
+    \item La capacidad del taller (un coche a la vez) y el costo de inactividad son factores críticos en la evaluación de la viabilidad de cambiar el servicio de mantenimiento.
+\end{itemize}
+
+\subsection{Experimentos Realizados para Validar las Hipótesis}\label{subsec:experimentos-realizados-para-validar-las-hipotesis}
+
+Se realizaron múltiples ejecuciones de la simulación(1000) variando la media del tiempo de mantenimiento del nuevo servicio para determinar el costo adicional máximo que sigue siendo rentable.
+
+\subsection{Análisis Estadístico de la Simulación}\label{subsec:analisis-estadistico-de-la-simulacion}
+
+El análisis estadístico es crucial para entender la variabilidad en los tiempos de espera y de mantenimiento, así como su impacto en los costos.
+Se utilizaron histogramas para comparar las distribuciones de los tiempos de espera y de mantenimiento(tiempo total de inactividad)en ambos escenarios.
+
+
+%\pagebreak
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/stop_hours}
+    \caption{Distribución de Tiempos de totales de inactividad para el Taller Actual y el Nuevo Servicio}
+    \label{fig:-tiempo_total_de_inactividad}
+
+\end{figure}
+
+
+Como se puede observar en la Figura~\ref{fig:-tiempo_total_de_inactividad}, el nuevo servicio reduce significativamente el tiempo total de inactividad de los coches en comparación con el taller actual.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/costs}
+    \caption{Costos del Taller Actual y el Nuevo Servicio usando el mismo costo por día}
+    \label{fig:-costos-totales}
+\end{figure}
+
+En la imagen~\ref{fig:-costos-totales} se puede observar que el nuevo servicio de mantenimiento es muy rentable al actual si el costo adicional es 0.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.7\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/initial_total_costs}
+        \caption{Costos del Taller inicial}
+        \label{fig:-costo-total-inicial}
+    \end{minipage}
+    \begin{minipage}{0.7\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/cost_with_price_increase}
+        \caption{Costos del Taller Actual}
+        \label{fig:-nuevo-costo-total}
+    \end{minipage}
+
+\end{figure}
+
+En la imagen~\ref{fig:-costo-total-inicial} y ~\ref{fig:-nuevo-costo-total} se puede observar que aun aumentando el costo en el nuevo sistema las dos gráficas muestran los mismos costes
+
+\subsection{Análisis de Parada de la Simulación}\label{subsec:analisis-de-parada-de-la-simulacion}
+
+
+La simulación se corrió durante un periodo de 365 días para capturar adecuadamente la variabilidad en los tiempos de llegada y de mantenimiento.
+Además esta misma se repitió 1000 veces para obtener una media más precisa de los costos.

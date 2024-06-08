@@ -1,0 +1,133 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+% Definición de colores para el código
+\definecolor{codegray}{gray}{0.9}
+\definecolor{codeblue}{rgb}{0,0,0.6}
+
+% Configuración para el entorno de listados
+\lstset{
+    backgroundcolor=\color{codegray},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{codeblue},
+    commentstyle=\color{gray},
+    showstringspaces=false,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    frame=single,
+    tabsize=4,
+    breaklines=true
+}
+
+\title{Informe de Simulación: Mantenimiento de Coches}
+\author{Eisler F. Valles Rodríguez, Rafael Acosta Márquez}
+
+\date{Junio 2024}
+
+\begin{document}
+
+    \maketitle
+
+    \tableofcontents
+
+    \newpage
+
+
+    \section{Introducción}\label{sec:introduccion}
+
+    \subsection{Breve Descripción del Proyecto}\label{subsec:breve-descripcion-del-proyecto}
+    Este proyecto se centra en la simulación del proceso de mantenimiento de coches en una compañía de alquiler.
+    Utilizamos la simulación basada en eventos discretos para modelar un taller de mantenimiento que opera las 24 horas del día, evaluando la viabilidad de cambiar a un nuevo servicio de mantenimiento más rápido pero más costoso.
+
+    \subsection{Objetivos y Metas}\label{subsec:objetivos-y-metas}
+    \begin{itemize}
+        \item Evaluar el costo total del mantenimiento actual y del tiempo de inactividad de los coches.
+        \item Analizar la viabilidad económica de cambiar a un nuevo servicio de mantenimiento que reduce el tiempo de servicio a costa de un mayor costo diario.
+        \item Determinar el incremento máximo en el costo del nuevo servicio de mantenimiento que sigue siendo rentable para la compañía.
+    \end{itemize}
+
+    \subsection{Sistema a Simular y Variables de Interés}\label{subsec:sistema-a-simular-y-variables-de-interes}
+    El sistema específico a simular es un taller de mantenimiento de coches con las siguientes características:
+    \begin{itemize}
+        \item \textbf{Capacidad del taller}: El taller puede atender un coche a la vez.
+        \item \textbf{Horario de operación}: El taller opera 24 horas al día.
+        \item \textbf{Tasa de llegada de coches}: Los coches llegan al taller con una media de 3 coches por día.
+        \item \textbf{Tiempo de mantenimiento}: El servicio de mantenimiento sigue una distribución exponencial con una media de 7 horas.
+        \item \textbf{Costo de mantenimiento}: El servicio actual cuesta 375 euros por día.
+        \item \textbf{Costo de inactividad}: Cada coche parado sin poder ser alquilado cuesta a la compañía 25 euros por día.
+        \item \textbf{Nuevo servicio de mantenimiento}: Puede reducir el tiempo de mantenimiento a una media de 5 horas, pero con un costo adicional.
+    \end{itemize}
+
+    \subsection{Variables que Describen el Problema}\label{subsec:variables-que-describen-el-problema}
+    \begin{itemize}
+        \item \textbf{Tasa de llegada de coches} ($\lambda$): 3 coches por día.
+        \item \textbf{Tiempo de mantenimiento} ($\mu$): Media de 7 horas actualmente, con la opción de reducirse a 5 horas.
+        \item \textbf{Costo de mantenimiento diario}: 375 euros.
+        \item \textbf{Costo de inactividad por coche}: 25 euros por día.
+        \item \textbf{Capacidad del taller}: 1 coche.
+        \item \textbf{Costo adicional permitido para el nuevo servicio}: A determinar.
+    \end{itemize}
+
+
+    \section{Detalles de Implementación}\label{sec:detalles-de-implementacion}
+    \input{detalles-de-implementación}
+
+
+    \section{Resultados y Experimentos}\label{sec:resultados-y-experimentos}
+    \input{resultados-y-experimentos}
+
+
+    \section{Modelo Matemático}\label{sec:modelo-matematico}
+
+    \subsection{Descripción del Modelo}\label{subsec:descripcion-del-modelo}
+
+    El modelo matemático utilizado se basa en distribuciones exponenciales para la llegada de coches y el tiempo de mantenimiento:
+
+    \begin{itemize}
+        \item \textbf{Distribución Exponencial de Llegadas}: La llegada de coches se modela con una tasa $\lambda = 3$ coches por día.
+        \item \textbf{Distribución Exponencial de Servicio}: El tiempo de mantenimiento se modela con una tasa $\mu = \frac{1}{7}$ horas para el servicio actual y $\mu = \frac{1}{5}$ horas para el nuevo servicio.
+    \end{itemize}
+
+    La función de distribución exponencial es:
+
+    \[
+        P(T \leq t) = 1 - e^{-\lambda t}
+    \]
+
+    \subsection{Supuestos y Restricciones}\label{subsec:supuestos-y-restricciones}
+
+    \begin{itemize}
+        \item \textbf{Llegadas Independientes}: Se asume que las llegadas de coches son independientes entre sí.
+        \item \textbf{Capacidad Constante}: El taller solo puede atender un coche a la vez.
+        \item \textbf{Costo Constante por Inactividad}: El costo diario por tener un coche parado es constante a 25 euros.
+        \item \textbf{Operación Continua}: El taller opera de manera continua las 24 horas.
+    \end{itemize}
+
+    \subsection{Comparación de Resultados con los Datos Experimentales}\label{subsec:comparacion-de-resultados-con-los-datos-experimentales}
+
+    Los resultados experimentales obtenidos a través de la simulación muestran una buena coherencia con los modelos matemáticos esperados para distribuciones exponenciales.
+    La evaluación del incremento máximo en el costo es consistente con la teoría económica de costos de oportunidad, donde la reducción en el tiempo de inactividad compensa el costo adicional del nuevo servicio.
+
+
+    \section{Conclusión}\label{sec:conclusion}
+
+    El análisis sugiere que la adopción del nuevo servicio de mantenimiento es viable hasta un incremento de aproximadamente 125 euros por día en el costo.
+    El enfoque de simulación y el modelo matemático utilizado proporcionan una base sólida para la toma de decisiones en la gestión del servicio de mantenimiento de coches de la compañía.
+    La simulación muestra cómo el cambio en la política de mantenimiento puede optimizar los costos operativos y reducir el tiempo de inactividad de los coches.
+
+    \bibliographystyle{plain}
+    \bibliography{bibliografia}
+
+
+\end{document}

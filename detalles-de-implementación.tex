@@ -1,0 +1,148 @@
+\subsection{Pasos Seguidos para la Implementación}\label{subsec:pasos-seguidos-para-la-implementacion}
+
+\begin{enumerate}
+    \item \textbf{Importación de Librerías}: Se utilizaron \texttt{simpy} para la simulación, así como \texttt{matplotlib} para la visualización de datos.
+
+    \begin{lstlisting}[language=Python, caption=Importación de Librerías,label={lst:lstlisting}]
+import matplotlib.pyplot as plt
+import simpy
+    \end{lstlisting}
+
+    \item \textbf{Modelado del Proceso de Mantenimiento}: Se definió una clase Workshop que modela el proceso de mantenimiento de un taller.
+
+    \begin{lstlisting}[language=Python, caption=Clase Workshop,label={lst:lstlisting2}]
+class Workshop:
+
+    def __init__(self, env, average_repair_time):
+        self.env = env
+        self.average_repair_time = average_repair_time
+        self.resource = simpy.Resource(env, capacity=1)
+
+    def repair_car(self):
+        repair_time = random.expovariate(1 / self.average_repair_time)
+        yield self.env.timeout(repair_time)
+        reparation_times.append(repair_time)
+        return repair_time
+
+    \end{lstlisting}
+
+    \pagebreak
+    \item \textbf{Simulación Continua del Taller}: Se creó una función que modela la llegada de coches al taller y el inicio del proceso de mantenimiento.
+
+    \begin{lstlisting}[language=Python, caption=Función de simulación de llegada de autos,label={lst:lstlisting3}]
+        
+def car(env, name, workshop, results):
+    arrival_time = env.now
+
+    with workshop.resource.request() as req:
+        yield req
+        start_repair_time = env.now
+        _ = yield env.process(workshop.repair_car())
+        end_repair_time = env.now
+        time_stopped = end_repair_time - arrival_time
+        results.append(
+            {
+                "name": name,
+                "arrival_time": arrival_time,
+                "start_repair_time": start_repair_time,
+                "end_repair_time": end_repair_time,
+                "time_stopped": time_stopped,
+            }
+        )
+
+
+    \end{lstlisting}
+
+    \item \textbf{Ejecución de la Simulación}: Se implementó una función principal que corre la simulación durante un periodo especificado y calcula el costo total total del tiempo parado, todo esto recibiendo el delay entre las llegadas de los autos
+
+    \begin{lstlisting}[language=Python, caption=Función Principal de Simulación,label={lst:lstlisting6}]
+def setup(env, average_repair_time, results, car_arrivals_delay):
+
+    workshop = Workshop(env, average_repair_time)
+
+    car_count = itertools.count()
+    idx = 1
+    while True:
+        yield env.timeout(car_arrivals_delay[idx])
+        env.process(car(env, f"Car {next(car_count)}", workshop, results))
+        idx +=1
+    \end{lstlisting}
+
+    \pagebreak
+    \item \textbf{Simulación de llegada de autos}: Para mantener la consistencia entre cada simulación con respecto al tiempo de llegada de los autos, se generó una lista con estos tiempos la cual es usada tanto para el sistema actual como para el nuevo
+
+    \begin{lstlisting}[language=Python, caption=Simulación de delay entre llegada de autos,label={lst:lstlisting4}]
+def simulate_car_arrival(env, car_arrival_de):
+
+    while True:
+        arrival_time = random.expovariate(1 / AVERAGE_ARRIVAL_TIME)
+        yield env.timeout(arrival_time)
+        car_arrival_de.append(arrival_time)
+
+
+def run_car_arrival():
+    env = simpy.Environment()
+    car_arrival_delay = []
+    env.process(simulate_car_arrival(env, car_arrival_delay))
+    env.run(until=SIMULATION_TIME)
+
+    # add a dummy value that never gets processed
+    car_arrival_delay.append(1000)
+
+    return car_arrival_delay
+
+    \end{lstlisting}
+    \pagebreak
+    \item \textbf{Visualización de Resultados}: Se graficaron los tiempos totales de inactividad para el taller actual y el nuevo servicio. Así como el máximo incremento permitido en el coste del nuevo taller
+
+    \begin{lstlisting}[language=Python, caption=Visualización de Resultados,label={lst:lstlisting7}]
+        
+def run_sims(simulations: int):
+    results = []
+    initial_stop_hours = []
+    new_stop_hours = []
+    initial_total_costs = []
+    new_total_costs = []
+    for i in range(simulations):
+
+        car_arrivals_delay = run_car_arrival()
+
+        initial_cost, logs = run_simulation(
+            AVERAGE_REPAIR_TIME, SIMULATION_TIME, car_arrivals_delay
+        )
+
+        # Calculate the total stop hours
+        stop_hours = sum(i["time_stopped"] for i in logs)
+        initial_stop_hours.append(stop_hours)
+
+        # Calculate the initial total cost
+        total_initial_cost = initial_cost + TOTAL_DAYS * MAINTENANCE_COST
+        initial_total_costs.append(total_initial_cost)
+
+        new_cost, new_logs = run_simulation(
+            NEW_AVERAGE_REPAIR_TIME, SIMULATION_TIME, car_arrivals_delay
+        )
+
+        # Calculate the new total stop hours
+        stop_hours = sum(i["time_stopped"] for i in new_logs)
+        new_stop_hours.append(stop_hours)
+
+        # Calculate the max allowed daily cost increase
+        max_allowed_daily_cost_increase = (total_initial_cost - new_cost) / TOTAL_DAYS
+
+        # Calculate the new total cost
+        new_total_cost = new_cost + TOTAL_DAYS * MAINTENANCE_COST
+        new_total_costs.append(new_total_cost)
+
+        results.append(max_allowed_daily_cost_increase - MAINTENANCE_COST)
+
+    mean = sum(results) / simulations
+    print(f"Average max allowed daily cost increase: {mean}")
+
+    plot_costs(initial_total_costs, new_total_costs, simulations)
+    plot_stop_hours(initial_stop_hours, new_stop_hours, simulations)
+    plot_max_allowed_cost_increase(mean, results, simulations)
+
+
+    \end{lstlisting}
+\end{enumerate}
